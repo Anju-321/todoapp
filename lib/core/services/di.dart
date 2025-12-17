@@ -51,7 +51,7 @@ getIt.registerLazySingleton<TodoRepository>(
 );
 
 // BLoC
-getIt.registerFactory(() => TodoBloc(getIt<TodoRepository>(),getIt<AuthRepository>()));
+getIt.registerFactory(() => TodoBloc(getIt<TodoRepository>()));
 
 
 }

@@ -32,21 +32,21 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   
 
   Future<void> _onAuthCheckRequested(
-    AuthCheckRequested event,
-    Emitter<AuthState> emit,
-  ) async {
-    emit(AuthLoading());
-    try {
-      final user = await _authRepository.getCurrentUser();
-      if (user != null) {
-        emit(AuthAuthenticated(user));
-      } else {
-        emit(AuthUnauthenticated());
-      }
-    } catch (e) {
+  AuthCheckRequested event,
+  Emitter<AuthState> emit,
+) async {
+  // Don't emit loading for silent auth checks
+  try {
+    final user = await _authRepository.getCurrentUser();
+    if (user != null) {
+      emit(AuthAuthenticated(user));
+    } else {
       emit(AuthUnauthenticated());
     }
+  } catch (e) {
+    emit(AuthUnauthenticated());
   }
+}
 
   Future<void> _onAuthLoginRequested(
     AuthLoginRequested event,

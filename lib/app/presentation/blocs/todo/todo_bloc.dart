@@ -13,14 +13,14 @@ part 'todo_state.dart';
 
 class TodoBloc extends Bloc<TodoEvent, TodoState> {
   final TodoRepository repository;
-   final AuthRepository _authRepository;
+  //  final AuthRepository _authRepository;
   final int pageSize = 20;
   int currentPage = 0;
   List<Todo> allTodos = [];
   Timer? _debounceTimer;
-   User? _currentUser; //
+  //  User? _currentUser; //
 
-  TodoBloc(this.repository, this._authRepository) : super(TodoInitial()) {
+  TodoBloc(this.repository, ) : super(TodoInitial()) {
     on<LoadTodosEvent>(_onLoadTodos);
     on<LoadMoreTodosEvent>(_onLoadMoreTodos);
     on<SearchTodosEvent>(_onSearchTodos);
