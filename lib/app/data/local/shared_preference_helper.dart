@@ -5,6 +5,20 @@ class SharedPreferencesHelper {
   static const String _keyRememberMe = 'remember_me';
   static const String _keyThemeMode = 'theme_mode';
   static const String _keyLastSyncTime = 'last_sync_time';
+  static const String _keySavedUsername = 'saved_username';
+static const String _keySavedPassword = 'saved_password';
+Future<void> saveCredentials(String username, String password) async {
+  await _prefs.setString(_keySavedUsername, username);
+  await _prefs.setString(_keySavedPassword, password);
+}
+
+String? getSavedUsername() => _prefs.getString(_keySavedUsername);
+String? getSavedPassword() => _prefs.getString(_keySavedPassword);
+
+Future<void> clearCredentials() async {
+  await _prefs.remove(_keySavedUsername);
+  await _prefs.remove(_keySavedPassword);
+}
 
   final SharedPreferences _prefs;
 

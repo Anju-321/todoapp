@@ -21,6 +21,12 @@ class _LoginScreenState extends State<LoginScreen> {
   final _passwordController = TextEditingController();
   bool rememberMe = true;
 
+  @override
+void initState() {
+  super.initState();
+   context.read<AuthBloc>().add(AuthLoadSavedLogin());
+}
+
    @override
   void dispose() {
     _usernameController.dispose();
@@ -33,6 +39,11 @@ Widget build(BuildContext context) {
     backgroundColor: primaryClr,
     body: BlocListener<AuthBloc, AuthState>(
       listener: (context, state) {
+         if (state is AuthLoginPrefilled) {
+      _usernameController.text = state.username ?? '';
+      _passwordController.text = state.password ?? '';
+      setState(() => rememberMe = state.rememberMe);
+    }
         if (state is AuthAuthenticated) {
           Navigator.pushReplacementNamed(context, '/home');
         }

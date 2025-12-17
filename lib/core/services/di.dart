@@ -39,7 +39,7 @@ Future<void> serviceLocator()async {
   getIt.registerFactory(() => AuthBloc(getIt<AuthRepository>()));
 
   //splash bloc
-  getIt.registerFactory(() => SplashBloc());
+  getIt.registerFactory(() => SplashBloc(getIt<AuthBloc>()));
 
 
   // Repository

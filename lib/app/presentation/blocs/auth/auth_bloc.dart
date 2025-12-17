@@ -16,7 +16,20 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<AuthRegisterRequested>(_onAuthRegisterRequested);
     on<AuthLogoutRequested>(_onAuthLogoutRequested);
     on<AuthProfileUpdated>(_onAuthProfileUpdated);
+    on<AuthLoadSavedLogin>((event, emit) async {
+  final rememberMe = _authRepository.getRememberMe();
+  final username = _authRepository.getSavedUsername();
+  final password = _authRepository.getSavedPassword();
+
+  emit(AuthLoginPrefilled(
+    username: username,
+    password: password,
+    rememberMe: rememberMe,
+  ));
+});
   }
+
+  
 
   Future<void> _onAuthCheckRequested(
     AuthCheckRequested event,

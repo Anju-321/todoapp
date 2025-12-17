@@ -92,7 +92,7 @@ class MyApp extends StatelessWidget {
               '/login': (_) => const LoginScreen(),
               '/register': (_) => const RegisterScreen(),
               '/home': (_) => const HomeScreen(),
-              '/profile': (_) => const ProfileScreen(),
+             
               '/settings': (_) => const SettingsScreen(),
             },
           );

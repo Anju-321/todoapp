@@ -21,6 +21,10 @@ class AuthRepository {
     final userId = _prefsHelper.getLoggedInUserId();
     return userId != null;
   }
+  bool getRememberMe() => _prefsHelper.getRememberMe();
+String? getSavedUsername() => _prefsHelper.getSavedUsername();
+String? getSavedPassword() => _prefsHelper.getSavedPassword();
+
 
   Future<User> register({
     required String username,
@@ -89,12 +93,27 @@ class AuthRepository {
     await _prefsHelper.setLoggedInUserId(user.id);
     await _prefsHelper.setRememberMe(rememberMe);
 
+    if (rememberMe) {
+    await _prefsHelper.saveCredentials(username, password);
+  } else {
+    await _prefsHelper.clearCredentials();
+  }
+
     return user.copyWith(rememberMe: rememberMe);
   }
 
   Future<void> logout() async {
+  final rememberMe = _prefsHelper.getRememberMe();
+
+  if (!rememberMe) {
+    // Full logout
     await _prefsHelper.clearAuth();
+    await _prefsHelper.clearCredentials();
   }
+  // else: do nothing → auto login next time
+}
+
+
 
   Future<User> updateProfile({
     required String userId,

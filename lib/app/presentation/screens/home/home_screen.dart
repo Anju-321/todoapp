@@ -6,9 +6,11 @@ import 'package:todo_app/app/presentation/widgets/apploader.dart';
 import 'package:todo_app/core/constants/colors.dart';
 import 'package:todo_app/core/constants/style.dart';
 import '../../../domain/entity/todo_entity.dart';
+import '../../../domain/entity/user_entity.dart';
 import '../../blocs/auth/auth_bloc.dart';
 import '../../blocs/todo/todo_bloc.dart';
 import '../../widgets/app_dialog.dart';
+import '../profile/profile_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -25,6 +27,7 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     _scrollController.addListener(_onScroll);
+    context.read<AuthBloc>().add(AuthCheckRequested());
     context.read<TodoBloc>().add(const LoadTodosEvent());
   }
 
@@ -47,68 +50,69 @@ class _HomeScreenState extends State<HomeScreen> {
     _searchController.dispose();
     super.dispose();
   }
-  
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-final colors = theme.colorScheme;
+    final colors = theme.colorScheme;
     return Scaffold(
       appBar: AppBar(
         title: Text(
           'To-Do List',
           style: AppTextStyles.textStyle_700_14_inter.copyWith(
-            color:  colors.onPrimary,
+            color: colors.onPrimary,
             fontSize: 18,
           ),
         ),
-        backgroundColor:colors.primary,
+        backgroundColor: colors.primary,
         elevation: 2,
         actions: [
-          IconButton(onPressed: () {
-            Navigator.pushNamed(context, '/settings');
-          }, icon: Icon(Icons.settings,   color: colors.onPrimary,)),
-        
+          IconButton(
+            onPressed: () {
+              Navigator.pushNamed(context, '/settings');
+            },
+            icon: Icon(Icons.settings, color: colors.onPrimary),
+          ),
         ],
-        leading: BlocBuilder<AuthBloc, AuthState>(
-  builder: (context, state) {
-    if (state is AuthAuthenticated) {
-      final imagePath = state.user.profilePicturePath;
+        leading: BlocSelector<AuthBloc, AuthState, User?>(
+          selector: (state) {
+            if (state is AuthAuthenticated) return state.user;
+            return null;
+          },
+          builder: (context, user) {
+            if (user == null) {
+              return IconButton(
+                onPressed: () => Navigator.pushNamed(context, '/login'),
+                icon: const CircleAvatar(radius: 22, child: Icon(Icons.person)),
+              );
+            }
 
-      return IconButton(
-        onPressed: () {
-          debugPrint("Profile tapped");
-          Navigator.pushNamed(context, '/profile');
-        },
-        icon: CircleAvatar(
-          radius: 22,
-          backgroundColor: colors.onPrimary,
-          backgroundImage: imagePath != null &&
-                  File(imagePath).existsSync()
-              ? FileImage(File(imagePath))
-              : const AssetImage('assets/images/applogo.png')
-                  as ImageProvider,
+            final imagePath = user.profilePicturePath;
+
+            return IconButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => ProfileScreen(user: user)),
+                );
+              },
+              icon: CircleAvatar(
+                radius: 22,
+                backgroundImage:
+                    imagePath != null && File(imagePath).existsSync()
+                    ? FileImage(File(imagePath))
+                    : const AssetImage('assets/images/applogo.png')
+                          as ImageProvider,
+              ),
+            );
+          },
         ),
-      );
-    }
 
-    return IconButton(
-      onPressed: () {
-        Navigator.pushNamed(context, '/profile');
-      },
-      icon: const CircleAvatar(
-        radius: 22,
-        child: Icon(Icons.person),
-      ),
-    );
-  },
-),
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(80),
           child: Padding(
             padding: const EdgeInsets.all(16.0),
-            child: 
-            TextField(
+            child: TextField(
               controller: _searchController,
               decoration: InputDecoration(
                 hintText: 'Search todos...',
@@ -269,16 +273,15 @@ final colors = theme.colorScheme;
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
         ),
         title: Text(
-  todo.title,
-  style: TextStyle(
-    decoration:
-        todo.completed ? TextDecoration.lineThrough : null,
-    color: todo.completed
-        ? colors.onSurface.withOpacity(0.5)
-        : colors.onSurface,
-    fontSize: 16,
-  ),
-),
+          todo.title,
+          style: TextStyle(
+            decoration: todo.completed ? TextDecoration.lineThrough : null,
+            color: todo.completed
+                ? colors.onSurface.withOpacity(0.5)
+                : colors.onSurface,
+            fontSize: 16,
+          ),
+        ),
         subtitle: Padding(
           padding: const EdgeInsets.only(top: 4),
           child: Text(

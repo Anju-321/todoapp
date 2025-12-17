@@ -28,3 +28,17 @@ class AuthError extends AuthState {
   @override
   List<Object?> get props => [message];
 }
+class AuthLoginPrefilled extends AuthState {
+  final String? username;
+  final String? password;
+  final bool rememberMe;
+
+   AuthLoginPrefilled({
+    this.username,
+    this.password,
+    required this.rememberMe,
+  });
+
+  @override
+  List<Object?> get props => [username, password, rememberMe];
+}

@@ -51,3 +51,5 @@ class AuthProfileUpdated extends AuthEvent {
   @override
   List<Object?> get props => [updatedUser];
 }
+
+class AuthLoadSavedLogin extends AuthEvent {}
